@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class RevisePrescriptionItemGenerator extends AbstractPrescriptionItemGenerator {
 	
 	@Override
-	public PrescriptionItem generate(final DrugOrder drugOrder, final Date creationDate)
+	public PrescriptionItem generate(final DrugOrder drugOrder, final Date consultationDate)
 	        throws PharmacyBusinessException {
 		
 		final DrugOrder fetchDO = this.fetchDrugOrder(drugOrder);
@@ -32,7 +32,7 @@ public class RevisePrescriptionItemGenerator extends AbstractPrescriptionItemGen
 		prescriptionItem
 		        .setDrugToPickUp(prescriptionItem.getDrugOrder().getQuantity() - prescriptionItem.getDrugPickedUp());
 		prescriptionItem.setExpectedNextPickUpDate(this.getNextPickUpDate(fetchDO));
-		prescriptionItem.setStatus(this.calculatePrescriptionItemStatus(fetchDO, creationDate));
+		prescriptionItem.setStatus(this.calculatePrescriptionItemStatus(prescriptionItem, consultationDate));
 		this.setPrescriptionInstructions(prescriptionItem, fetchDO);
 		this.setArvDataFields(drugOrder, prescriptionItem);
 		
@@ -40,12 +40,12 @@ public class RevisePrescriptionItemGenerator extends AbstractPrescriptionItemGen
 	}
 	
 	@Override
-	protected PrescriptionItemStatus calculatePrescriptionItemStatus(final DrugOrder drugOrder,
-	        final Date creationDate) {
+	protected PrescriptionItemStatus calculatePrescriptionItemStatus(final PrescriptionItem item,
+	        final Date consultationDate) {
 		
-		final PrescriptionItemStatus status = Action.DISCONTINUE.equals(drugOrder.getAction())
+		final PrescriptionItemStatus status = Action.DISCONTINUE.equals(item.getDrugOrder().getAction())
 		        ? PrescriptionItemStatus.FINALIZED : PrescriptionItemStatus.ACTIVE;
 		
-		return this.isOrderExpired(drugOrder, creationDate) ? PrescriptionItemStatus.EXPIRED : status;
+		return this.isOrderExpired(item, consultationDate) ? PrescriptionItemStatus.EXPIRED : status;
 	}
 }

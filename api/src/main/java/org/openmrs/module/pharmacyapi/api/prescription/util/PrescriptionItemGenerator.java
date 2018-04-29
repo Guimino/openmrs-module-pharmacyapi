@@ -17,6 +17,6 @@ import org.openmrs.module.pharmacyapi.api.prescription.model.PrescriptionItem;
 
 public interface PrescriptionItemGenerator {
 	
-	PrescriptionItem generate(DrugOrder drugOrder, Date creationDate) throws PharmacyBusinessException;
+	PrescriptionItem generate(DrugOrder drugOrder, Date consultationDate) throws PharmacyBusinessException;
 	
 }

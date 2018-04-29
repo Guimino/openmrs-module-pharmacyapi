@@ -174,10 +174,14 @@ public class PrescriptionUtils {
 		final Encounter encounter = this.generateEncounterDuePrescriptionRules(prescription, location);
 		
 		encounter.setForm(pharmacyHeuristicService.getFormByPatientAge(prescription.getPatient()));
-		if (encounter.getVisit() == null) {
-			encounter.setVisit(pharmacyHeuristicService
-			        .findLastVisitByPatientAndEncounterDate(prescription.getPatient(), prescriptionDate));
-		}
+		
+		// FIXME remove this one
+		
+		// if (encounter.getVisit() == null) {
+		// encounter.setVisit(pharmacyHeuristicService
+		// .findLastVisitByPatientAndEncounterDate(prescription.getPatient(),
+		// prescriptionDate));
+		// }
 		return encounter;
 	}
 	
@@ -227,7 +231,8 @@ public class PrescriptionUtils {
 		return false;
 	}
 	
-	public Concept getArvRegimeByPrescriptionRegimeUuid(final Prescription prescription) throws PharmacyBusinessException {
+	public Concept getArvRegimeByPrescriptionRegimeUuid(final Prescription prescription)
+	        throws PharmacyBusinessException {
 		
 		Concept regime = null;
 		
@@ -251,7 +256,8 @@ public class PrescriptionUtils {
 		        * drugOrder.getFrequency().getFrequencyPerDay();
 	}
 	
-	private Concept getArvPlanByPrescriptionArvPlanUuid(final Prescription prescription) throws PharmacyBusinessException {
+	private Concept getArvPlanByPrescriptionArvPlanUuid(final Prescription prescription)
+	        throws PharmacyBusinessException {
 		
 		Concept arvPlan = null;
 		

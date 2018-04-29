@@ -107,7 +107,7 @@ public class PrescriptionGenerator {
 		
 		final Encounter prescriptionEncounter = this.getPrescriptionEncounter(encounter);
 		
-		final Set<Obs> allObs = prescriptionEncounter.getAllObs();
+		final Set<Obs> allObs = prescriptionEncounter.getAllObs(false);
 		if (this.precriptionDateConcept == null) {
 			this.precriptionDateConcept = Context.getConceptService()
 			        .getConceptByUuid(MappedConcepts.POC_MAPPING_PRESCRIPTION_DATE);

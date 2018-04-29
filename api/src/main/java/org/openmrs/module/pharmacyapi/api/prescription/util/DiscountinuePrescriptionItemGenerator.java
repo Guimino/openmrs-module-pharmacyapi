@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class DiscountinuePrescriptionItemGenerator extends AbstractPrescriptionItemGenerator {
 	
 	@Override
-	public PrescriptionItem generate(final DrugOrder drugOrder, final Date creationDate)
+	public PrescriptionItem generate(final DrugOrder drugOrder, final Date consultationDate)
 	        throws PharmacyBusinessException {
 		
 		final DrugOrder fetchDO = this.fetchDrugOrder(drugOrder);
@@ -34,19 +34,21 @@ public class DiscountinuePrescriptionItemGenerator extends AbstractPrescriptionI
 		prescriptionItem.setExpectedNextPickUpDate(this.getNextPickUpDate(prescriptionItem.getDrugOrder()));
 		this.setPrescriptionInstructions(prescriptionItem, prescriptionItem.getDrugOrder());
 		
-		prescriptionItem.setStatus(this.calculatePrescriptionItemStatus(fetchDO, creationDate));
+		prescriptionItem.setStatus(this.calculatePrescriptionItemStatus(prescriptionItem, consultationDate));
 		this.setArvDataFields(fetchDO, prescriptionItem);
 		return prescriptionItem;
 	}
 	
 	private DrugOrder cloneDrugOrder(final DrugOrder drugOrder) {
 		
+		final DrugOrder clone = new DrugOrder();
+		clone.setPreviousOrder(drugOrder.getPreviousOrder());
+		
 		DrugOrder tempDrugOrder = drugOrder;
-		while (Action.DISCONTINUE.equals(tempDrugOrder.getAction())) {
+		while (!Action.NEW.equals(tempDrugOrder.getAction())) {
 			
 			tempDrugOrder = (DrugOrder) drugOrder.getPreviousOrder();
 		}
-		final DrugOrder clone = new DrugOrder();
 		
 		clone.setId(tempDrugOrder.getId());
 		clone.setDose(tempDrugOrder.getDose());
@@ -75,11 +77,11 @@ public class DiscountinuePrescriptionItemGenerator extends AbstractPrescriptionI
 	}
 	
 	@Override
-	protected PrescriptionItemStatus calculatePrescriptionItemStatus(final DrugOrder drugOrder,
-	        final Date expirationDate) {
+	protected PrescriptionItemStatus calculatePrescriptionItemStatus(final PrescriptionItem item,
+	        final Date consultationDate) {
 		
-		return drugOrder.getOrderReason() != null ? PrescriptionItemStatus.INTERRUPTED
-		        : this.isOrderExpired(drugOrder, expirationDate) ? PrescriptionItemStatus.EXPIRED
+		return item.getDrugOrder().getOrderReason() != null ? PrescriptionItemStatus.INTERRUPTED
+		        : this.isOrderExpired(item, consultationDate) ? PrescriptionItemStatus.EXPIRED
 		                : PrescriptionItemStatus.FINALIZED;
 	}
 }

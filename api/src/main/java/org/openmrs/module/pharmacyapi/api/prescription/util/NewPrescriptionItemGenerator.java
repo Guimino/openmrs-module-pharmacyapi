@@ -21,13 +21,13 @@ import org.springframework.stereotype.Component;
 public class NewPrescriptionItemGenerator extends AbstractPrescriptionItemGenerator {
 	
 	@Override
-	public PrescriptionItem generate(final DrugOrder drugOrder, final Date creationDate)
+	public PrescriptionItem generate(final DrugOrder drugOrder, final Date consultationDate)
 	        throws PharmacyBusinessException {
 		
 		final DrugOrder fetchedDO = this.fetchDrugOrder(drugOrder);
 		
 		final PrescriptionItem prescriptionItem = new PrescriptionItem(fetchedDO);
-		prescriptionItem.setStatus(this.calculatePrescriptionItemStatus(fetchedDO, creationDate));
+		prescriptionItem.setStatus(this.calculatePrescriptionItemStatus(prescriptionItem, consultationDate));
 		prescriptionItem.setDrugPickedUp(0d);
 		prescriptionItem.setDrugToPickUp(fetchedDO.getQuantity());
 		this.setPrescriptionInstructions(prescriptionItem, fetchedDO);
@@ -37,10 +37,10 @@ public class NewPrescriptionItemGenerator extends AbstractPrescriptionItemGenera
 	}
 	
 	@Override
-	protected PrescriptionItemStatus calculatePrescriptionItemStatus(final DrugOrder drugOrder,
-	        final Date creationDate) {
+	protected PrescriptionItemStatus calculatePrescriptionItemStatus(final PrescriptionItem item,
+	        final Date consultationDate) {
 		
-		return this.isOrderExpired(drugOrder, creationDate) ? PrescriptionItemStatus.EXPIRED
+		return this.isOrderExpired(item, consultationDate) ? PrescriptionItemStatus.EXPIRED
 		        : PrescriptionItemStatus.NEW;
 	}
 }
